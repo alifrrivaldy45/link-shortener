@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shorten Links</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; }
+    textarea { width: 100%; height: 200px; }
+    button { padding: 10px 20px; font-size: 16px; margin: 10px 0; }
+    ul { padding-left: 1rem; }
+    li { margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Masukkan Link Panjang (satu per baris):</h2>
+  <textarea id="inputLinks" placeholder="https://example.com/page1"></textarea><br>
+  <button onclick="shortenLinks()">Generate Short Links</button>
+  <h3>Shortened Links:</h3>
+  <ul id="shortenedList"></ul>
+
+  <script>
+    async function shortenLinks() {
+      const input = document.getElementById('inputLinks').value;
+      const links = input.split('\n').map(l => l.trim()).filter(l => l);
+      const output = document.getElementById('shortenedList');
+      output.innerHTML = '';
+
+      for (let link of links) {
+        try {
+          const res = await fetch('https://is.gd/create.php?format=simple&url=' + encodeURIComponent(link));
+          const short = await res.text();
+          const li = document.createElement('li');
+          li.innerHTML = `<a href="${short}" target="_blank">${short}</a>`;
+          output.appendChild(li);
+        } catch (e) {
+          const li = document.createElement('li');
+          li.textContent = 'Gagal untuk: ' + link;
+          output.appendChild(li);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
